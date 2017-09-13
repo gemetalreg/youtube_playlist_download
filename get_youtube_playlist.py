@@ -1,41 +1,14 @@
-#!/usr/bin/env python3
-
 import requests
 from bs4 import BeautifulSoup
 import os
 from pytube import YouTube
-import threading
-import sys
+import argparse
+from multiprocessing import Process
 
-palylist_url = ""
-path = ""
-file_name = "video_list"
-
-numberOfArgv = len(sys.argv)
-if (numberOfArgv < 3):
-    print("Usage: " + sys.argv[0] + " must have 2 or 3 args")
-    sys.exit(1)
-
-elif (numberOfArgv == 3):
-    palylist_url = sys.argv[1]
-    path = sys.argv[2]
-
-else:
-    palylist_url = sys.argv[1]
-    path = sys.argv[2]
-    file_name = sys.argv[3]
-
-def get_file_of_urls(palylist_url, path, file_name = "video_list"):
-    '''
-    :param palylist_url: Write youtube palylist url, which You want to download
-    :param path: Path, where videos will be download, for example "D:\\Users\\CrisisCore"
-    :param file_name: Name of file, where links of all playlist video will be stored
-    :return: pass
-    '''
+def get_links_from_youtube(palylist_url) -> set:
+    video_link_set = set()
 
     play_list = requests.get(palylist_url)
-
-    video_link_set = set()
 
     if play_list.ok:
         html_list = BeautifulSoup(play_list.text, 'html.parser')
@@ -46,44 +19,54 @@ def get_file_of_urls(palylist_url, path, file_name = "video_list"):
             if "index" in temp and temp not in video_link_set:
                 video_link_set.add("https://www.youtube.com" + temp)
 
-    with open(file_name, "wt") as op:
-        for el in video_link_set:
-            op.write(el)
-            op.write("\n")
+    return video_link_set
 
-    path = path
+def get_video_format() -> str:
+    return "mp4"
+
+def get_video_resolution(youtube: YouTube, video_format) -> str:
+    resolutions = youtube.filter(video_format)
+    return resolutions[-1]
+
+
+def get_file_of_urls(palylist_url, path):
+    '''
+    :param palylist_url: Write youtube palylist url, which You want to download
+    :param path: Path, where videos will be download, for example "D:\\Users\\CrisisCore"
+    :return: None
+    '''
+    video_link_set = get_links_from_youtube(palylist_url)
 
     if not os.path.exists(path):
         os.mkdir(path)
 
-    with open(file_name, "rt") as op:
-        mas = op.readlines()
+    for link in video_link_set:
+        yt = YouTube(link.rstrip())
+        
+        video_format = get_video_format()
 
-        for link in mas:
+        video_resolution = get_video_resolution(yt, video_format)
 
-            yt = YouTube(link.rstrip())
+        video = yt.get(extension = video_format, resolution = video_resolution)
 
-            temp_dict = {}
-            temp_dict["video_format"] = "mp4"
+        video_download_process = Process(target = video.download, args = (path,))
+        video_download_process.start()
+        video_download_process.join()
 
-            if yt.filter(resolution = "720p"):
-                temp_dict["fideo_q"] = "720p"
+parser = argparse.ArgumentParser()
 
-            elif yt.filter(resolution = "480p") and not yt.filter(resolution = "720p"):
-                temp_dict["fideo_q"] = "480p"
+parser.add_argument("--palylist_url", "-p",
+                    help = "palylist_url what you want to download",
+                    nargs = 1)
 
-            elif yt.filter(resolution = "360p") and not yt.filter(resolution = "480p") and \
-                    not yt.filter(resolution = "720p"):
-                temp_dict["fideo_q"] = "360p"
+parser.add_argument("--dest", "-d",
+                    help = "destination, where are you want to download playlist",
+                    nargs = 1)
 
-            else:
-                temp_dict["fideo_q"] = "240p"
+args = parser.parse_args()
 
-            video = yt.get(extension = temp_dict["video_format"], resolution = temp_dict["fideo_q"])
+palylist_url = args.palylist_url[0]
 
-            # video.download(path)
-            threading.Thread(target = video.download, args = [path]).start()
+dest = args.dest[0]
 
-
-if __name__ == '__main__':
-    get_file_of_urls(palylist_url, path, file_name)
+get_file_of_urls(palylist_url, dest)
