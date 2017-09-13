@@ -61,23 +61,25 @@ def get_file_of_urls(playlist_url, path):
     for process_joinable in procs:
         process_joinable.join()
 
-parser = argparse.ArgumentParser()
-
-parser.add_argument("--palylist_url", "-p",
-                    help = "palylist_url what you want to download",
-                    nargs = 1)
-
-parser.add_argument("--dest", "-d",
-                    help = "destination, where are you want to download playlist",
-                    nargs = 1)
-
-args = parser.parse_args()
-
-playlist_url = args.palylist_url[0]
-
-dest = args.dest[0]
-
-if __name__ == '__main__':
+if __name__ == '__main__': 
     freeze_support()
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--playlist_url", "-p",
+                        help = "playlist_url what you want to download",
+                        nargs = 1)
+
+    parser.add_argument("--dest", "-d",
+                        help = "destination, where are you want to download playlist",
+                        nargs = 1)
+
+    args = parser.parse_args()
+
+    playlist_url = args.palylist_url[0]
+
+    dest = args.dest[0]
+
     get_file_of_urls(playlist_url, dest)
+    
     print(f"Downloads end successfully. Your videos in {dest}")
