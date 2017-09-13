@@ -4,7 +4,7 @@
 
 Downloads are multiprosessing, used multiprocessing module.
 
-This program is CLI and requires two parametrs:
+This program is CLI and requires two parametrs(flags):
 
 - playlist_url, for example https://www.youtube.com/some_playlist_name;
 - dest, where are you download playlist videos.
