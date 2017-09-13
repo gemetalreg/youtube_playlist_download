@@ -25,19 +25,19 @@ def get_video_format() -> str:
     return "mp4"
 
 def get_video_resolution(youtube: YouTube, video_format) -> str:
-    resolutions = ["1080p", "720p", "480p", "360p", "240p"]
-    for res in resolutions:
-        if youtube.filter(video_format, resolution = res):
-            return res
+    videos = youtube.filter(video_format)
+    if len(videos) > 0:
+        bes_res_videos = videos[-1]
+        return bes_res_videos.resolution
     raise TypeError("choose another video format")
 
-def get_file_of_urls(palylist_url, path):
+def get_file_of_urls(playlist_url, path):
     '''
-    :param palylist_url: Write youtube palylist url, which You want to download
+    :param playlist_url: Write youtube palylist url, which You want to download
     :param path: Path, where videos will be download, for example "D:\\Users\\CrisisCore"
     :return: None
     '''
-    video_link_set = get_links_from_youtube(palylist_url)
+    video_link_set = get_links_from_youtube(playlist_url)
 
     if not os.path.exists(path):
         os.mkdir(path)
@@ -73,10 +73,11 @@ parser.add_argument("--dest", "-d",
 
 args = parser.parse_args()
 
-palylist_url = args.palylist_url[0]
+playlist_url = args.palylist_url[0]
 
 dest = args.dest[0]
 
 if __name__ == '__main__':
     freeze_support()
-    get_file_of_urls(palylist_url, dest)
+    get_file_of_urls(playlist_url, dest)
+    print(f"Downloads end successfully. Your videos in {dest}")
