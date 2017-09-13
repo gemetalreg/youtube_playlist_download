@@ -11,7 +11,7 @@ This program is CLI and requires two parametrs:
 
 ## Examples
 ```sh
-  python youtube_playlist_download.py --palylist_url https://www.youtube.com/some_playlist_name --dest /usr/video_folder
+python youtube_playlist_download.py --playlist_url https://www.youtube.com/some_playlist_name --dest /usr/video_folder
 ```
 or
 ```sh
