@@ -18,7 +18,7 @@ or
   python youtube_playlist_download.py -p https://www.youtube.com/some_playlist_name -d /usr/video_folder
 ```
 
-For Window dest must be two-braces format: D:\\Users\\CrisisCore.
+For Window dest must be two-braces format:
 ```sh
   python youtube_playlist_download.py -p https://www.youtube.com/some_playlist_name -d D:\\Users\\CrisisCore
 ```
