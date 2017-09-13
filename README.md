@@ -11,14 +11,14 @@ This program is CLI and requeres two parametrs:
 
 ## Examples
 ```sh
-  python youtube_playlist_download --palylist_url https://www.youtube.com/some_playlist_name --dest /usr/video_folder
+  python youtube_playlist_download.py --palylist_url https://www.youtube.com/some_playlist_name --dest /usr/video_folder
 ```
 or
 ```sh
-  python youtube_playlist_download -p https://www.youtube.com/some_playlist_name -d /usr/video_folder
+  python youtube_playlist_download.py -p https://www.youtube.com/some_playlist_name -d /usr/video_folder
 ```
 
 For Window dest must be two-braces format: D:\\Users\\CrisisCore.
 ```sh
-  python youtube_playlist_download -p https://www.youtube.com/some_playlist_name -d D:\\Users\\CrisisCore
+  python youtube_playlist_download.py -p https://www.youtube.com/some_playlist_name -d D:\\Users\\CrisisCore
 ```
