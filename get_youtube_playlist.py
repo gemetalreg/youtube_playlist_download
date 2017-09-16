@@ -3,21 +3,22 @@ from bs4 import BeautifulSoup
 import os
 from pytube import YouTube
 import argparse
-from multiprocessing import Process, freeze_support
+import multiprocessing as mp
 
-def get_links_from_youtube(palylist_url) -> set:
+def get_links_from_youtube(playlist_url) -> set:
     video_link_set = set()
 
-    play_list = requests.get(palylist_url)
+    play_list = requests.get(playlist_url)
 
     if play_list.ok:
         html_list = BeautifulSoup(play_list.text, 'html.parser')
         list_a = html_list.body.findAll("a")
 
         for link in list_a:
-            temp = "https://www.youtube.com" + link["href"]
-            if "index" in temp and temp not in video_link_set:
-                video_link_set.add(temp)
+            full_link = "https://www.youtube.com" + link["href"]
+            full_link_clear = full_link.rstrip()
+            if "index" in full_link_clear and full_link_clear not in video_link_set:
+                video_link_set.add(full_link_clear)
 
     return video_link_set
 
@@ -31,6 +32,15 @@ def get_video_resolution(youtube: YouTube, video_format) -> str:
         return bes_res_videos.resolution
     raise TypeError("choose another video format")
 
+def worker(queue, path):
+    while True:
+        video = queue.get()
+
+        if video is None:
+            break
+
+        video.download(path)
+
 def get_file_of_urls(playlist_url, path):
     '''
     :param playlist_url: Write youtube palylist url, which You want to download
@@ -42,9 +52,12 @@ def get_file_of_urls(playlist_url, path):
     if not os.path.exists(path):
         os.mkdir(path)
 
-    procs = []
+    number_of_procs = os.cpu_count() or 2
+
+    queue = mp.Queue()
+
     for link in video_link_set:
-        yt = YouTube(link.rstrip())
+        yt = YouTube(link)
 
         video_format = get_video_format()
 
@@ -52,17 +65,25 @@ def get_file_of_urls(playlist_url, path):
 
         video = yt.get(extension = video_format, resolution = video_resolution)
 
-        video_download_process = Process(target = video.download, args = (path,))
+        queue.put(video)
+
+    for _ in range(number_of_procs):
+        queue.put(None)
+
+    procs = []
+    
+    for _ in range(number_of_procs):
+        video_download_process = mp.Process(target = worker, args = (queue, path))
         procs.append(video_download_process)
 
-    for process in procs:
-        process.start()
+    for starting_proc in procs:
+        starting_proc.start()
 
-    for process_joinable in procs:
-        process_joinable.join()
+    for joining_proc in procs:
+        joining_proc.join()
 
-if __name__ == '__main__': 
-    freeze_support()
+if __name__ == '__main__':
+    mp.freeze_support()
 
     parser = argparse.ArgumentParser()
 
@@ -76,10 +97,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    playlist_url = args.palylist_url[0]
+    playlist_url = args.playlist_url[0]
 
     dest = args.dest[0]
 
     get_file_of_urls(playlist_url, dest)
-    
-    print(f"Downloads end successfully. Your videos in {dest}")
+
+    print(f"Downloads end successfully. Your videos in {dest}.")
