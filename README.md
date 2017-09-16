@@ -2,8 +2,6 @@
 
 ## Allows to download all videos from youtube playlist.
 
-Downloads are multiprosessing, used multiprocessing module.
-
 This program is CLI and requires two parametrs (flags):
 
 - playlist_url, for example https://www.youtube.com/some_playlist_name;
@@ -22,3 +20,4 @@ For Window dest must be two-braces format:
 ```sh
   python youtube_playlist_download.py -p https://www.youtube.com/some_playlist_name -d D:\\Users\\CrisisCore
 ```
+Downloads are multiprosessing, used multiprocessing module.
