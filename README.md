@@ -20,4 +20,4 @@ For Window dest must be two-braces format:
 ```sh
   python youtube_playlist_download.py -p https://www.youtube.com/some_playlist_name -d D:\\Users\\CrisisCore
 ```
-Downloads are multiprosessing, used multiprocessing module.
+Downloads are multiprosessing, used [multiprocessing](https://docs.python.org/3.6/library/multiprocessing.html) module.
