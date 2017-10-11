@@ -2,12 +2,17 @@
 
 ## Allows to download all videos from youtube playlist.
 
+## Installations
+```sh
+git clone https://github.com/gemetalreg/youtube_playlist_download
+cd youtube_playlist_download
+```
+## Usage
 This program is CLI and requires two parametrs (flags):
 
 - playlist_url, for example https://www.youtube.com/some_playlist_name;
 - dest, where are you download playlist videos.
 
-## Examples
 ```sh
 python youtube_playlist_download.py --playlist_url https://www.youtube.com/some_playlist_name --dest /usr/video_folder
 ```
